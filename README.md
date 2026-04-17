@@ -4,7 +4,7 @@ A three-pillar data pipeline and scoring framework that ranks Southeast U.S. met
 
 ## Start Here
 
-- **Project summary page**: [project_summary.html](./project_summary.html)
+- **Project summary page**: [index.html](./index.html)
 - **Analysis notebook**: [southeast_housing_analysis.ipynb](./southeast_housing_analysis.ipynb)
 - **Rendered notebook**: [southeast_housing_analysis.html](./southeast_housing_analysis.html)
 
