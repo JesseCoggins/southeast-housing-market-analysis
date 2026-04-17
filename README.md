@@ -6,7 +6,6 @@ A three-pillar data pipeline and scoring framework that ranks Southeast U.S. met
 
 - **Project summary page**: [Live project summary](https://jessecoggins.github.io/southeast-housing-market-analysis/)
 - **Analysis notebook**: [southeast_housing_analysis.ipynb](./southeast_housing_analysis.ipynb)
-- **Rendered notebook**: [southeast_housing_analysis.html](./southeast_housing_analysis.html)
 
 ---
 
