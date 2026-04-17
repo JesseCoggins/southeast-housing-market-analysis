@@ -2,6 +2,12 @@
 
 A three-pillar data pipeline and scoring framework that ranks Southeast U.S. metros on affordability, growth, and labor-market strength, then identifies which markets best balance upside with economic stability.
 
+## Start Here
+
+- **Project summary page**: [project_summary.html](./project_summary.html)
+- **Analysis notebook**: [southeast_housing_analysis.ipynb](./southeast_housing_analysis.ipynb)
+- **Rendered notebook**: [southeast_housing_analysis.html](./southeast_housing_analysis.html)
+
 ---
 
 ## Research Question
