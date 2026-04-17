@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Southeast Housing Market Analysis</title>
+  <meta name="description" content="A data project that scores 105 Southeast metros on affordability, price growth, and labor-market strength to identify which markets are genuinely strong." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg:           #0d1512;
+      --bg-alt:       #101a16;
+      --bg-lift:      #131e19;
+      --surface:      rgba(232,222,199,0.03);
+      --surface-hi:   rgba(232,222,199,0.055);
+      --border:       rgba(232,222,199,0.09);
+      --border-hi:    rgba(232,222,199,0.18);
+      --text:         #f0ead8;
+      --text-dim:     #b8b09a;
+      --text-muted:   #756e5c;
+      --gold:         #c9b687;
+      --gold-dim:     rgba(201,182,135,0.5);
+      --sage:         #8aa884;
+      --grad:         linear-gradient(135deg,#c9b687 0%,#8aa884 100%);
+      --font-sans:    "Inter",-apple-system,BlinkMacSystemFont,sans-serif;
+      --font-serif:   "Instrument Serif","Times New Roman",Georgia,serif;
+      --font-mono:    "JetBrains Mono",ui-monospace,Menlo,monospace;
+      --ease:         cubic-bezier(0.22,1,0.36,1);
+      --r:            14px;
+    }
+
+    *,*::before,*::after { box-sizing:border-box; }
+    * { margin:0; padding:0; }
+    html { scroll-behavior:smooth; }
+    body {
+      font-family: var(--font-sans);
+      font-size: 16px;
+      line-height: 1.7;
+      color: var(--text);
+      background: var(--bg);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    a { color:inherit; text-decoration:none; }
+    em { font-style:italic; }
+    ::selection { background:rgba(201,182,135,0.3); }
+
+    /* ── Grain + orbs ── */
+    .grain {
+      position:fixed; inset:0; pointer-events:none; z-index:1;
+      opacity:0.03;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      mix-blend-mode:overlay;
+    }
+    .orb {
+      position:fixed; border-radius:50%;
+      filter:blur(130px); pointer-events:none; z-index:0;
+    }
+    .orb-1 {
+      width:550px; height:550px; top:-180px; left:-180px;
+      background:radial-gradient(circle,rgba(201,182,135,0.55),transparent 70%);
+      opacity:0.32;
+    }
+    .orb-2 {
+      width:420px; height:420px; bottom:10%; right:-120px;
+      background:radial-gradient(circle,rgba(138,168,132,0.45),transparent 70%);
+      opacity:0.28;
+    }
+
+    /* ── Nav ── */
+    .nav {
+      position:sticky; top:0; z-index:100;
+      background:rgba(13,21,18,0.78);
+      backdrop-filter:saturate(160%) blur(20px);
+      -webkit-backdrop-filter:saturate(160%) blur(20px);
+      border-bottom:1px solid var(--border);
+    }
+    .nav-inner {
+      max-width:1060px; margin:0 auto; padding:0 28px;
+      display:flex; align-items:center; justify-content:space-between;
+      height:54px; gap:16px;
+    }
+    .nav-brand {
+      font-size:13px; font-weight:600;
+      color:var(--text); letter-spacing:-0.01em;
+    }
+    .nav-brand span {
+      font-size:11px; font-weight:400;
+      color:var(--text-muted); margin-left:10px;
+      text-transform:uppercase; letter-spacing:0.1em;
+    }
+    .nav-links { display:flex; gap:8px; }
+    .nav-btn {
+      font-size:12px; font-weight:500;
+      padding:7px 14px; border-radius:999px;
+      border:1px solid var(--border);
+      background:var(--surface);
+      color:var(--text-dim);
+      transition:border-color .2s var(--ease),color .2s var(--ease);
+    }
+    .nav-btn:hover { border-color:var(--border-hi); color:var(--text); }
+    .nav-btn-primary {
+      background:var(--grad); color:#0d1512;
+      border-color:transparent;
+    }
+    .nav-btn-primary:hover { opacity:.9; }
+
+    /* ── Container ── */
+    .wrap { max-width:880px; margin:0 auto; padding:0 28px; }
+    .wrap-wide { max-width:1060px; margin:0 auto; padding:0 28px; }
+
+    /* ── Hero ── */
+    .hero { position:relative; z-index:2; padding:90px 0 64px; }
+    .kicker {
+      display:inline-flex; align-items:center; gap:8px;
+      font-family:var(--font-mono); font-size:11px;
+      color:var(--gold); letter-spacing:0.1em;
+      text-transform:uppercase; margin-bottom:28px;
+    }
+    .kicker::before {
+      content:""; display:inline-block;
+      width:24px; height:1px; background:var(--gold-dim);
+    }
+    .question {
+      font-family:var(--font-serif); font-weight:400;
+      font-size:clamp(2.4rem,5.5vw,4.2rem);
+      line-height:1.14; letter-spacing:-0.02em;
+      color:var(--text); margin-bottom:36px;
+      padding-bottom:0.08em;
+    }
+    .question em {
+      background:linear-gradient(135deg,#efe6cc 0%,#c9b687 50%,#8aa884 100%);
+      -webkit-background-clip:text; background-clip:text; color:transparent;
+      font-style:italic;
+      display:inline-block;
+      padding:0 0.08em 0.18em 0.06em;
+    }
+
+    /* ── Bottom-line callout ── */
+    .callout {
+      border-left:2px solid var(--gold);
+      padding:22px 26px;
+      background:rgba(201,182,135,0.04);
+      border-radius:0 var(--r) var(--r) 0;
+      margin-bottom:0;
+    }
+    .callout-label {
+      font-family:var(--font-mono); font-size:10px;
+      text-transform:uppercase; letter-spacing:0.14em;
+      color:var(--gold); margin-bottom:10px;
+    }
+    .callout p {
+      font-size:16.5px; line-height:1.75; color:var(--text-dim);
+    }
+    .callout strong { color:var(--text); font-weight:600; }
+
+    /* ── Badges ── */
+    .badge-row { display:flex; flex-wrap:wrap; gap:8px; margin-top:28px; }
+    .badge {
+      font-size:11px; padding:6px 12px; border-radius:999px;
+      border:1px solid var(--border); background:var(--surface);
+      color:var(--text-dim); letter-spacing:0.03em;
+    }
+    .scope-row {
+      display:flex;
+      gap:0;
+      margin-top:20px;
+      max-width:760px;
+      border-top:1px solid var(--border);
+      border-bottom:1px solid var(--border);
+    }
+    .scope-item {
+      flex:1;
+      padding:14px 24px 14px 0;
+    }
+    .scope-item + .scope-item {
+      padding-left:24px;
+      border-left:1px solid var(--border);
+    }
+    .scope-label {
+      font-size:10px;
+      text-transform:uppercase;
+      letter-spacing:0.12em;
+      color:var(--gold);
+      margin-bottom:5px;
+      display:block;
+    }
+    .scope-item p {
+      font-size:13px;
+      line-height:1.65;
+      color:var(--text-dim);
+    }
+    .hero-note {
+      margin-top:18px;
+      font-size:13px;
+      line-height:1.7;
+      color:var(--text-muted);
+      max-width:760px;
+    }
+    .hero-note strong { color:var(--text-dim); font-weight:600; }
+
+    /* ── Section base ── */
+    .section {
+      position:relative; z-index:2;
+      padding:68px 0;
+      border-top:1px solid var(--border);
+    }
+    .section-alt { background:var(--bg-alt); }
+    .eyebrow {
+      display:flex; align-items:center; gap:12px;
+      margin-bottom:18px;
+    }
+    .eyebrow-num {
+      font-family:var(--font-mono); font-size:10px;
+      color:var(--gold); letter-spacing:0.12em;
+    }
+    .eyebrow-label {
+      font-size:10px; text-transform:uppercase;
+      letter-spacing:0.16em; color:var(--text-muted);
+    }
+    .section-title {
+      font-family:var(--font-serif); font-weight:400;
+      font-size:clamp(1.7rem,3.2vw,2.6rem);
+      line-height:1.14; letter-spacing:-0.02em;
+      color:var(--text); margin-bottom:14px;
+      padding-bottom:0.06em;
+    }
+    .section-title em {
+      font-style:italic;
+      background:linear-gradient(135deg,#efe6cc,#c9b687 50%,#8aa884);
+      -webkit-background-clip:text; background-clip:text; color:transparent;
+    }
+    .section-intro {
+      font-size:16px; color:var(--text-dim);
+      line-height:1.75; max-width:720px; margin-bottom:38px;
+    }
+
+    /* ── Tables ── */
+    .tables-row { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+    .table-card {
+      background:var(--surface); border:1px solid var(--border);
+      border-radius:var(--r); padding:24px 22px;
+    }
+    .table-card h3 {
+      font-family:var(--font-serif); font-weight:400;
+      font-size:20px; letter-spacing:-0.01em;
+      margin-bottom:6px; color:var(--text);
+    }
+    .table-note {
+      font-size:11.5px; color:var(--text-muted);
+      line-height:1.5; margin-bottom:16px;
+    }
+    table { width:100%; border-collapse:collapse; font-size:13px; }
+    th {
+      text-align:left; font-size:10px; font-weight:600;
+      text-transform:uppercase; letter-spacing:0.12em;
+      color:var(--text-muted); padding:7px 8px;
+      border-bottom:1px solid var(--border);
+    }
+    td { padding:9px 8px; border-bottom:1px solid rgba(232,222,199,0.05); color:var(--text); }
+    tr:last-child td { border-bottom:none; }
+    tr:hover td { background:rgba(255,255,255,0.018); }
+    .rank { font-family:var(--font-mono); color:var(--gold); width:32px; }
+    .gold   { color:#e3c475; }
+    .silver { color:#d7d3ca; }
+    .bronze { color:#c18d69; }
+    .bar-wrap { display:flex; align-items:center; gap:8px; }
+    .bar {
+      height:6px; border-radius:999px;
+      background:rgba(255,255,255,0.07); flex:1; min-width:60px;
+    }
+    .bar-fill { height:100%; border-radius:999px; background:var(--grad); }
+    .bar-val {
+      font-family:var(--font-mono); font-size:11px;
+      color:var(--text-dim); width:32px; text-align:right;
+    }
+
+    /* ── Insights ── */
+    .insights { display:grid; gap:0; }
+    .insight {
+      display:grid; grid-template-columns:180px 1fr;
+      gap:24px; padding:24px 0;
+      border-bottom:1px solid var(--border);
+    }
+    .insight:first-child { border-top:1px solid var(--border); }
+    .insight-label {
+      font-family:var(--font-serif); font-size:21px;
+      letter-spacing:-0.01em;
+      color:var(--text); padding-top:0; line-height:1.2;
+    }
+    .insight-body { font-size:15px; color:var(--text-dim); line-height:1.75; }
+    .insight-body strong { color:var(--text); font-weight:600; }
+
+    /* ── Methodology ── */
+    .method-layout { display:grid; grid-template-columns:1fr; gap:18px; align-items:start; }
+    .method-card {
+      background:var(--surface); border:1px solid var(--border);
+      border-radius:var(--r); padding:26px 24px;
+    }
+    .method-card h3 {
+      font-family:var(--font-serif); font-weight:400;
+      font-size:20px; margin-bottom:18px; letter-spacing:-0.01em;
+    }
+    .pillars { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; margin-bottom:18px; }
+    .pillar {
+      padding:16px; border-radius:12px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,0.02);
+    }
+    .p-name {
+      font-size:10px; font-weight:700; text-transform:uppercase;
+      letter-spacing:0.1em; color:var(--text-muted); margin-bottom:8px;
+    }
+    .p-pct {
+      font-family:var(--font-serif); font-size:26px;
+      color:var(--gold); line-height:1; margin-bottom:8px;
+    }
+    .p-items { font-size:11.5px; color:var(--text-dim); line-height:1.65; }
+    .method-desc { font-size:14px; color:var(--text-dim); line-height:1.75; }
+
+    .method-notes { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
+    .mnote {
+      padding:16px 18px; border-radius:var(--r);
+      background:var(--surface); border:1px solid var(--border);
+      height:100%;
+    }
+    .mnote-label {
+      font-size:10px; text-transform:uppercase; letter-spacing:0.12em;
+      color:var(--gold); margin-bottom:8px;
+    }
+    .mnote p { font-size:13.5px; color:var(--text-dim); line-height:1.72; }
+
+    /* ── Stakeholders ── */
+    .sh-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    .sh {
+      padding:20px 22px; border-radius:var(--r);
+      background:var(--surface); border:1px solid var(--border);
+    }
+    .sh-type {
+      font-size:10px; text-transform:uppercase; letter-spacing:0.14em;
+      color:var(--gold); margin-bottom:9px;
+    }
+    .sh-text { font-size:14px; color:var(--text-dim); line-height:1.72; }
+    .sh-text p + p { margin-top:10px; }
+    .sh-text strong { color:var(--text); font-weight:600; }
+    .sh-sub {
+      font-size:11px; text-transform:uppercase; letter-spacing:0.1em;
+      color:var(--text-muted); margin-bottom:8px;
+    }
+
+    /* ── Sources ── */
+    .sources { display:grid; gap:12px; }
+    .source {
+      display:flex; gap:14px; align-items:flex-start;
+      padding:14px 0; border-bottom:1px solid rgba(232,222,199,0.06);
+    }
+    .source:last-child { border-bottom:none; }
+    .source-tag {
+      flex-shrink:0;
+      background:rgba(201,182,135,0.07); border:1px solid rgba(201,182,135,0.15);
+      border-radius:999px; padding:4px 10px;
+      font-size:10.5px; font-weight:600; color:var(--gold);
+      white-space:nowrap; letter-spacing:0.04em;
+    }
+    .source-text { font-size:13.5px; color:var(--text-dim); line-height:1.65; }
+    .repro-note {
+      margin-top:20px; padding:16px 18px; border-radius:var(--r);
+      background:var(--surface); border:1px solid var(--border);
+      font-size:13px; color:var(--text-muted); line-height:1.7;
+    }
+    .repro-note code {
+      font-family:var(--font-mono); color:var(--gold); font-size:12px;
+    }
+
+    /* ── Footer ── */
+    .footer {
+      position:relative; z-index:2;
+      border-top:1px solid var(--border);
+      background:var(--bg-alt);
+      padding:32px 0;
+    }
+    .footer-inner {
+      display:flex; justify-content:space-between;
+      align-items:center; gap:16px; flex-wrap:wrap;
+    }
+    .footer-copy { font-size:12px; color:var(--text-muted); }
+    .footer-links { display:flex; gap:16px; }
+    .footer-links a { font-size:12px; color:var(--sage); }
+    .footer-links a:hover { color:var(--text); }
+
+    /* ── Responsive ── */
+    @media (max-width:820px) {
+      .tables-row,
+      .method-layout,
+      .method-notes,
+      .sh-grid { grid-template-columns:1fr; }
+      .scope-row { flex-direction:column; }
+      .scope-item + .scope-item { border-left:none; border-top:1px solid var(--border); padding-left:0; }
+      .insight { grid-template-columns:1fr; gap:8px; }
+      .pillars { grid-template-columns:1fr; }
+      .question { font-size:clamp(2rem,8vw,2.8rem); }
+    }
+    @media (max-width:560px) {
+      .wrap,.wrap-wide { padding:0 18px; }
+      .hero { padding:72px 0 48px; }
+      .section { padding:52px 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="orb orb-1" aria-hidden="true"></div>
+  <div class="orb orb-2" aria-hidden="true"></div>
+
+  <!-- NAV -->
+  <header class="nav">
+    <div class="nav-inner">
+      <div class="nav-brand">
+        Southeast Housing Market Analysis
+        <span>Jesse Coggins</span>
+      </div>
+      <div class="nav-links">
+        <a class="nav-btn" href="README.md">README</a>
+        <a class="nav-btn nav-btn-primary" href="southeast_housing_analysis.ipynb">Full Notebook</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- HERO: Question + Bottom Line -->
+    <section class="hero">
+      <div class="wrap">
+        <div class="kicker">Data Project &middot; Housing Market Analysis &middot; Southeast U.S.</div>
+
+        <h1 class="question">
+          Which Southeast metros are <em>genuinely</em> strong after
+          affordability, growth, and labor-market fundamentals are evaluated together?
+        </h1>
+
+        <div class="callout">
+          <div class="callout-label">The finding</div>
+          <p>
+            This project evaluates <strong>105 metros across 11 Southeast states</strong> using two views:
+            an overall score that blends affordability, growth, and labor-market depth, and a balance score
+            that requires growth and labor-market strength to agree. The strongest markets are not simply the
+            cheapest or the fastest-appreciating. They are the metros where price levels still make sense
+            relative to income, where population and home-price momentum are real, and where the labor market
+            is broad enough to sustain demand. <strong>Huntsville, AL ranks first on both the overall score and
+            the balance score</strong>, making it the clearest example of a market that performs well without
+            a major tradeoff.
+          </p>
+        </div>
+
+        <div class="badge-row">
+          <span class="badge">Python &middot; pandas</span>
+          <span class="badge">Census ACS API</span>
+          <span class="badge">FHFA HPI</span>
+          <span class="badge">BLS LAUS API</span>
+          <span class="badge">105 metros &middot; 11 states</span>
+          <span class="badge">2019&ndash;2023 growth window</span>
+        </div>
+        <div class="scope-row">
+          <div class="scope-item">
+            <span class="scope-label">In scope</span>
+            <p>Metro areas across the Southeast only, compared on affordability, growth, and labor-market strength.</p>
+          </div>
+          <div class="scope-item">
+            <span class="scope-label">Not in scope</span>
+            <p>Listing-level pricing, cap rates, neighborhood comparisons, or deal-specific underwriting inputs.</p>
+          </div>
+        </div>
+        <p class="hero-note">
+          This page is a portfolio-style summary of the full notebook, which carries the project through ETL,
+          cleaning, EDA, feature engineering, scoring, sensitivity checks, and stakeholder interpretation.
+        </p>
+      </div>
+    </section>
+
+    <!-- RANKINGS -->
+    <section class="section section-alt">
+      <div class="wrap-wide">
+        <div class="wrap" style="padding-left:0;padding-right:0;">
+          <div class="eyebrow">
+            <span class="eyebrow-num">01</span>
+            <span class="eyebrow-label">Results</span>
+          </div>
+          <h2 class="section-title">Two rankings, <em>two ways to read the market.</em></h2>
+          <p class="section-intro">
+            The <strong style="color:var(--text)">overall score</strong> is the broad screening view. It asks which metros
+            look strongest when affordability, growth, and labor-market depth are weighted almost evenly. The
+            <strong style="color:var(--text)">balance score</strong> is the stricter view. It asks which metros remain compelling
+            when strong growth and strong labor-market conditions are both required at the same time. In practice,
+            the overall list tends to surface metros that are exceptionally affordable, while the balance list
+            surfaces metros where momentum and economic depth reinforce each other. Markets that appear in both
+            are the most defensible all-around picks in the dataset.
+          </p>
+        </div>
+
+        <div class="tables-row">
+          <div class="table-card">
+            <h3>Top 10 Overall</h3>
+            <p class="table-note">Approximately equal-weight composite: Affordability (33%) &middot; Growth (34%) &middot; Labor Market (33%)</p>
+            <table>
+              <thead><tr><th>#</th><th>Metro</th><th>Score</th></tr></thead>
+              <tbody>
+                <tr><td class="rank gold">1</td><td>Huntsville, AL</td><td><div class="bar-wrap"><div class="bar"><div class="bar-fill" style="width:86%"></div></div><span class="bar-val">0.86</span></div></td></tr>
+                <tr><td class="rank silver">2</td><td>Florence-Muscle Shoals, AL</td><td><div class="bar-wrap"><div class="bar"><div class="bar-fill" style="width:78%"></div></div><span class="bar-val">0.78</span></div></td></tr>
+                <tr><td class="rank bronze">3</td><td>Decatur, AL</td><td><div class="bar-wrap"><div class="bar"><div class="bar-fill" style="width:76%"></div></div><span class="bar-val">0.76</span></div></td></tr>
+                <tr><td class="rank">4</td><td>Fayetteville-Springdale-Rogers, AR</td><td><div class="bar-wrap"><div class="bar"><div class="bar-fill" style="width:74%"></div></div><span class="bar-val">0.74</span></div></td></tr>
+                <tr><td class="rank">5</td><td>Bowling Green, KY</td><td><div class="bar-wrap"><div class="bar"><div class="bar-fill" style="width:70%"></div></div><span class="bar-val">0.70</span></div></td></tr>
+                <tr><td class="rank">6</td><td>Warner Robins, GA</td><td><div class="bar-wrap"><div class="bar"><div class="bar-fill" style="width:70%"></div></div><span class="bar-val">0.70</span></div></td></tr>
+                <tr><td class="rank">7</td><td>Birmingham, AL</td><td><div class="bar-wrap"><div class="bar"><div class="bar-fill" style="width:68%"></div></div><span class="bar-val">0.68</span></div></td></tr>
+                <tr><td class="rank">8</td><td>Montgomery, AL</td><td><div class="bar-wrap"><div class="bar"><div class="bar-fill" style="width:67%"></div></div><span class="bar-val">0.67</span></div></td></tr>
+                <tr><td class="rank">9</td><td>Spartanburg, SC</td><td><div class="bar-wrap"><div class="bar"><div class="bar-fill" style="width:65%"></div></div><span class="bar-val">0.65</span></div></td></tr>
+                <tr><td class="rank">10</td><td>Lexington-Fayette, KY</td><td><div class="bar-wrap"><div class="bar"><div class="bar-fill" style="width:65%"></div></div><span class="bar-val">0.65</span></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="table-card">
+            <h3>Top 10 by Balance Score</h3>
+            <p class="table-note">Geometric mean of Growth and Labor Market. A metro must be strong on both to rank here.</p>
+            <table>
+              <thead><tr><th>#</th><th>Metro</th><th>Balance</th></tr></thead>
+              <tbody>
+                <tr><td class="rank gold">1</td><td>Huntsville, AL</td><td><div class="bar-wrap"><div class="bar"><div class="bar-fill" style="width:88%"></div></div><span class="bar-val">0.88</span></div></td></tr>
+                <tr><td class="rank silver">2</td><td>Fayetteville-Springdale-Rogers, AR</td><td><div class="bar-wrap"><div class="bar"><div class="bar-fill" style="width:83%"></div></div><span class="bar-val">0.83</span></div></td></tr>
+                <tr><td class="rank bronze">3</td><td>Nashville, TN</td><td><div class="bar-wrap"><div class="bar"><div class="bar-fill" style="width:77%"></div></div><span class="bar-val">0.77</span></div></td></tr>
+                <tr><td class="rank">4</td><td>Charlotte-Concord-Gastonia, NC-SC</td><td><div class="bar-wrap"><div class="bar"><div class="bar-fill" style="width:70%"></div></div><span class="bar-val">0.70</span></div></td></tr>
+                <tr><td class="rank">5</td><td>Auburn-Opelika, AL</td><td><div class="bar-wrap"><div class="bar"><div class="bar-fill" style="width:70%"></div></div><span class="bar-val">0.70</span></div></td></tr>
+                <tr><td class="rank">6</td><td>Bowling Green, KY</td><td><div class="bar-wrap"><div class="bar"><div class="bar-fill" style="width:69%"></div></div><span class="bar-val">0.69</span></div></td></tr>
+                <tr><td class="rank">7</td><td>Florence-Muscle Shoals, AL</td><td><div class="bar-wrap"><div class="bar"><div class="bar-fill" style="width:69%"></div></div><span class="bar-val">0.69</span></div></td></tr>
+                <tr><td class="rank">8</td><td>Gainesville, GA</td><td><div class="bar-wrap"><div class="bar"><div class="bar-fill" style="width:68%"></div></div><span class="bar-val">0.68</span></div></td></tr>
+                <tr><td class="rank">9</td><td>Birmingham, AL</td><td><div class="bar-wrap"><div class="bar"><div class="bar-fill" style="width:67%"></div></div><span class="bar-val">0.67</span></div></td></tr>
+                <tr><td class="rank">10</td><td>Knoxville, TN</td><td><div class="bar-wrap"><div class="bar"><div class="bar-fill" style="width:67%"></div></div><span class="bar-val">0.67</span></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- KEY INSIGHTS -->
+    <section class="section">
+      <div class="wrap">
+        <div class="eyebrow">
+          <span class="eyebrow-num">02</span>
+          <span class="eyebrow-label">What the data shows</span>
+        </div>
+        <h2 class="section-title">What the results <em>say about the region.</em></h2>
+
+        <div class="insights">
+          <div class="insight">
+            <div class="insight-label">Why Huntsville leads</div>
+            <div class="insight-body">
+              Most high-scoring metros are strong on one pillar and weak on another: high affordability
+              but sluggish growth, or fast-growing but priced out. Huntsville scores in the upper third
+              on all three simultaneously. It has a defense and aerospace employment base that keeps the
+              labor market tight, real population inflow, and a price-to-income ratio that still looks
+              reasonable relative to the rest of the sample. No major tradeoff required.
+            </div>
+          </div>
+          <div class="insight">
+            <div class="insight-label">Why overall and balance split apart</div>
+            <div class="insight-body">
+              The overall ranking still rewards metros that are genuinely inexpensive, which is why
+              Florence-Muscle Shoals and Decatur place so highly there. The balance ranking changes the
+              picture by requiring strength on both growth and labor-market stability. That is why
+              Fayetteville-Springdale-Rogers and Nashville move higher in the balanced view, while
+              affordability-led metros with weaker growth momentum fall back.
+            </div>
+          </div>
+          <div class="insight">
+            <div class="insight-label">Why some headline markets fall back</div>
+            <div class="insight-body">
+              Large or well-known metros do not automatically win this framework. Several bigger Southeast markets
+              still show healthy job growth, but their price-to-income ratios and rent burdens have stretched far
+              faster than local incomes. Once affordability is treated as a real constraint instead of an afterthought,
+              those metros lose ground to smaller markets with stronger value discipline.
+            </div>
+          </div>
+          <div class="insight">
+            <div class="insight-label">What the framework rewards</div>
+            <div class="insight-body">
+              The highest-ranked metros tend to share the same pattern: manageable price-to-income ratios,
+              real population growth, and a labor market that looks healthy beyond the headline unemployment
+              rate. That combination is why several large, more expensive markets fall behind. The framework
+              is not looking for the fastest appreciation alone. It is looking for appreciation that is
+              supported by fundamentals.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- METHODOLOGY -->
+    <section class="section section-alt">
+      <div class="wrap">
+        <div class="eyebrow">
+          <span class="eyebrow-num">03</span>
+          <span class="eyebrow-label">Methodology</span>
+        </div>
+        <h2 class="section-title">How the scoring framework <em>works.</em></h2>
+        <p class="section-intro">
+          The score is built to be transparent, reproducible, and auditable. It combines a current
+          affordability snapshot, a multi-year growth window from 2019 to 2023, and current labor-market
+          depth. Every metric is converted to a percentile rank before weighting, so no large-scale variable
+          dominates simply because of its units. The goal is not to create a black-box winner. It is to show
+          exactly why one metro rises above another.
+        </p>
+
+        <div class="method-layout">
+          <div class="method-card">
+            <h3>Three-pillar scoring</h3>
+            <div class="pillars">
+              <div class="pillar">
+                <div class="p-name">Affordability &middot; 33%</div>
+                <div class="p-pct">0.33</div>
+                <div class="p-items">Whether home prices still make sense relative to local incomes. Whether rent would be manageable on a typical local salary.</div>
+              </div>
+              <div class="pillar">
+                <div class="p-name">Growth &middot; 34%</div>
+                <div class="p-pct">0.34</div>
+                <div class="p-items">Whether people are actually moving to the area. Whether home prices have been building real momentum. Whether available housing is tightening.</div>
+              </div>
+              <div class="pillar">
+                <div class="p-name">Labor Market &middot; 33%</div>
+                <div class="p-pct">0.33</div>
+                <div class="p-items">How broadly the population is employed, not just the headline unemployment rate. Whether the job base is expanding. Whether incomes are high enough and growing.</div>
+              </div>
+            </div>
+            <p class="method-desc">
+              The overall score blends all three pillars into one broad screening metric. The balance score
+              takes the geometric mean of Growth and Labor Market only, excluding affordability, so it isolates
+              which metros are strong on both economic dimensions simultaneously. That second ranking is what makes
+              the project more than a simple affordability list or hot-market list. The percentages shown inside
+              each pillar are internal weights, not household spending shares.
+            </p>
+          </div>
+
+          <div class="method-notes">
+            <div class="mnote">
+              <div class="mnote-label">Why E/Pop anchors the labor pillar</div>
+              <p>Unemployment rate can stay low when workers leave the labor force entirely. Employment-to-Population avoids that problem. If people exit the local economy, E/Pop falls even when the unemployment headline stays flat.</p>
+            </div>
+            <div class="mnote">
+              <div class="mnote-label">Why the balance score matters</div>
+              <p>The balance score catches a problem that a simple average can miss. A metro can look strong overall because it is very cheap, even if growth is only average. The geometric mean pushes those one-sided cases down and lifts markets that are genuinely strong on both growth and labor-market stability.</p>
+            </div>
+            <div class="mnote">
+              <div class="mnote-label">Robustness and limits</div>
+              <p>The notebook includes a lightweight sensitivity check across alternative weight sets to see whether the top metros stay near the top when priorities shift. The ranking should still be read in tiers rather than with false precision, especially when adjacent metros have very similar scores. In the notebook, labels such as Top Tier are simple score terciles, not fixed score cutoffs. The full notebook also documents the complete-case logic, data gaps, and tradeoffs introduced by using public agency data only.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WHO THIS IS FOR -->
+    <section class="section">
+      <div class="wrap">
+        <div class="eyebrow">
+          <span class="eyebrow-num">04</span>
+          <span class="eyebrow-label">Application</span>
+        </div>
+        <h2 class="section-title">How different stakeholders can <em>use the rankings.</em></h2>
+        <p class="section-intro">
+          This is a first-pass screening tool. It narrows the field, clarifies the tradeoffs, and tells you
+          where to look first. It does not replace local research on listings, cap rates, underwriting standards,
+          or employer news. It helps you ask better next-step questions. The key is to match the ranking lens to
+          the decision you are actually making: the overall list is better for broad screening, while the balance
+          list is better when resilience matters more than simple cheapness.
+        </p>
+
+        <div class="sh-grid">
+          <div class="sh">
+            <div class="sh-type">Homebuyer</div>
+            <div class="sh-text">
+              <div class="sh-sub">Best use of the ranking</div>
+              <p>
+                Start with <strong>Huntsville</strong> if you want the strongest all-around market in the sample.
+                It offers the clearest mix of reasonable entry cost, labor-market strength, and forward-looking
+                growth support. If maximum purchase affordability matters more than upside, Florence-Muscle Shoals
+                and Decatur deserve a look, but they should be read as lower-cost options, not necessarily the
+                strongest long-run markets.
+              </p>
+              <p>
+                For buyers, the main question is whether you want the <strong>cheapest market today</strong> or the
+                <strong>strongest long-run combination of value and fundamentals</strong>. The overall ranking helps with
+                the first screen. The balance ranking helps separate genuinely resilient metros from places that are
+                simply inexpensive because growth has been weaker.
+              </p>
+            </div>
+          </div>
+          <div class="sh">
+            <div class="sh-type">Real Estate Investor</div>
+            <div class="sh-text">
+              <div class="sh-sub">Best use of the ranking</div>
+              <p>
+                Use the <strong>balance score list</strong> as your primary filter. Huntsville and
+                Fayetteville-Springdale-Rogers are especially valuable because price momentum and labor-market
+                depth are both high at the same time. That lowers the chance that appreciation is being driven
+                mainly by speculative heat.
+              </p>
+              <p>
+                For investors, this framework is best used as a <strong>demand-quality screen</strong>. It tells you
+                where appreciation appears to be supported by population growth, employment depth, and income
+                strength. It does not replace deal underwriting, so the next step is still local validation with
+                rent comps, cap rates, vacancy, and current supply.
+              </p>
+            </div>
+          </div>
+          <div class="sh">
+            <div class="sh-type">Lender / Risk Analyst</div>
+            <div class="sh-text">
+              <div class="sh-sub">Best use of the ranking</div>
+              <p>
+                Treat the <strong>labor-market pillar</strong>, especially E/Pop ratio and income growth, as the
+                primary credit-quality signal. A market that looks attractive only because it is cheap can still be
+                fragile if employment depth and income formation are weak.
+              </p>
+              <p>
+                For credit and risk work, the useful distinction is between markets that are <strong>affordable and
+                healthy</strong> versus markets that are <strong>affordable because demand is stagnant</strong>. High
+                affordability paired with a weak balance score is a flag for more conservative underwriting rather
+                than a reason to lean in.
+              </p>
+            </div>
+          </div>
+          <div class="sh">
+            <div class="sh-type">Regional Planner</div>
+            <div class="sh-text">
+              <div class="sh-sub">Best use of the ranking</div>
+              <p>
+                The <strong>balance top five</strong> are the regional benchmark for what sustained, two-dimensional
+                growth looks like. They provide a more useful comparison set than headline metros alone because they
+                show where growth and labor-market depth are reinforcing each other instead of pulling apart.
+              </p>
+              <p>
+                For public-sector readers, the value is diagnostic. If a metro underperforms, the framework helps show
+                whether the binding constraint is weak growth, shallow labor-market depth, or affordability pressure
+                created by rapid appreciation. That makes the ranking more useful as a policy lens than as a vanity table.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DATA SOURCES -->
+    <section class="section section-alt">
+      <div class="wrap">
+        <div class="eyebrow">
+          <span class="eyebrow-num">05</span>
+          <span class="eyebrow-label">Data &amp; Reproducibility</span>
+        </div>
+        <h2 class="section-title">Data, scope, and <em>reproducibility.</em></h2>
+        <p class="section-intro">
+          The project is reproducible from public APIs, not proprietary feeds. Census provides the affordability and
+          demographic backbone, FHFA provides metro-level house price momentum, and BLS provides labor-market depth.
+          Those pulls are stitched together in a reusable ingestion layer, transformed to a metro-level analysis
+          dataset, and then scored in the notebook.
+        </p>
+
+        <div class="sources">
+          <div class="source">
+            <span class="source-tag">Census ACS</span>
+            <span class="source-text">2023 and 2019 American Community Survey 1-year estimates covering median home value, gross rent, household income, population, housing units, vacancy rate, and tenure. These pulls support both the current affordability snapshot and the 2019&rarr;2023 growth calculations.</span>
+          </div>
+          <div class="source">
+            <span class="source-tag">FHFA HPI</span>
+            <span class="source-text">Quarterly metro-level House Price Index, seasonally and non-seasonally adjusted. Quarter-over-quarter and year-over-year price momentum come from the most recent available quarter and anchor the price-growth portion of the framework.</span>
+          </div>
+          <div class="source">
+            <span class="source-tag">BLS LAUS</span>
+            <span class="source-text">Metro-level unemployment rate and employment level via the Bureau of Labor Statistics API. Employment-to-Population ratio is computed from employment level and Census population for the same metro geography, which gives the labor pillar more depth than unemployment alone.</span>
+          </div>
+        </div>
+
+        <div class="repro-note">
+          All data is pulled directly from the source APIs and cached locally as CSV files. The full pipeline,
+          from raw API pull to final ranked output, lives in <code>data_ingestion.py</code> and
+          <code>southeast_housing_analysis.ipynb</code>. The ingestion layer is written to be reusable
+          across other geographies; it is not hard-coded to the Southeast. The notebook then carries the project
+          through cleaning, EDA, feature engineering, sensitivity checks, ranking, and stakeholder interpretation.
+          In other words, this page is the summary, not the only evidence. The full project remains inspectable end to end.
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <div class="wrap-wide">
+      <div class="footer-inner">
+        <div class="footer-copy">Southeast Housing Market Analysis &middot; Jesse Coggins &middot; Data: U.S. Census Bureau, FHFA, BLS</div>
+        <div class="footer-links">
+          <a href="southeast_housing_analysis.ipynb">Full notebook</a>
+          <a href="README.md">README</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
