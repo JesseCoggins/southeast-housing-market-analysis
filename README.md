@@ -43,13 +43,13 @@ The scoring framework is intentionally transparent and reproducible. All scoring
 | Source | What It Provides | Vintage |
 |---|---|---|
 | U.S. Census ACS 1-Year | Median home value, gross rent, household income, population, housing units, vacancy, tenure, education, cost burden | 2023 (current), 2019 (growth baseline) |
-| FHFA House Price Index | Quarterly metro-level HPI, seasonally and non-seasonally adjusted | Latest available quarter |
-| BLS LAUS (series 00000003) | Metro unemployment rate | Latest 12-month period |
-| BLS LAUS (series 00000005) | Metro employment level, used to compute Employment-to-Population ratio and YoY employment growth | Latest 12-month period |
+| FHFA House Price Index | Quarterly metro-level all-transactions HPI used to derive quarter-over-quarter and year-over-year price momentum | Latest available quarter in the project snapshot |
+| BLS LAUS (series 00000003) | Metro unemployment rate | Latest monthly observation in the project snapshot |
+| BLS LAUS (series 00000005) | Metro employment level, used to compute Employment-to-Population ratio and YoY employment growth | Latest monthly observation in the project snapshot |
 | U.S. Census Building Permits Survey | Metro permit totals by structure type | 2023 |
 | BLS State and Area Employment | Metro supersector employment mix | 2023, optional |
 
-Population growth and income growth are computed as percent change from 2019 to 2023 using paired ACS pulls. Employment growth is the latest year-over-year percent change from the BLS employment-level series.
+Population growth and income growth are computed as percent change from 2019 to 2023 using paired ACS pulls. Employment growth is the year-over-year percent change between the latest project-snapshot month and the same month one year earlier in the BLS employment-level series.
 
 ---
 
@@ -182,10 +182,10 @@ This analysis does not replace local due diligence. Rankings are point-in-time m
 
 ## Limitations
 
-- **Complete-case analysis**: metros missing any of the core required metrics — seasonally adjusted HPI index, HPI QoQ, HPI YoY, unemployment rate, population growth, income growth, employment growth, employment-to-population ratio, vacancy rate, or gross yield — are excluded from the final ranking. This makes the sample smaller and adjacent ranks less precise.
+- **Complete-case analysis**: metros missing any of the core required metrics — HPI index, HPI QoQ, HPI YoY, unemployment rate, population growth, income growth, employment growth, employment-to-population ratio, vacancy rate, or gross yield — are excluded from the final ranking. This makes the sample smaller and adjacent ranks less precise.
 - **ACS 1-year coverage**: the Census universe favors larger metros. Smaller Southeast markets may not appear in the sample.
 - **Loaded data vs. scored data**: the pipeline can also pull building permits by default and industry employment optionally, but those datasets are not part of the current scoring model. They are included for exploration and future model expansion rather than the ranked output shown here.
 - **Coverage overlap matters**: the missing-data counts for FHFA and BLS do not add linearly because many metros are missing both sources at the same time. The final dropout from 156 metros to 105 reflects overlapping coverage gaps rather than separate source failures stacking independently.
 - **Simple weighting**: the percentile scoring and approximately equal-weight pillars create a transparent ranking, and the notebook includes a lightweight sensitivity check across alternative pillar weights. Even so, rankings at the margin should still be interpreted as approximate rather than precise.
-- **Point-in-time snapshot**: the scoring reflects the most recent available data vintage. It does not forecast future conditions or account for local policy changes, new employer announcements, or macro interest rate shifts.
+- **Point-in-time snapshot**: the scoring reflects the most recent data vintage included in this project snapshot. It does not forecast future conditions or account for local policy changes, new employer announcements, or macro interest rate shifts.
 - **Sensitivity to weighting choices**: the notebook includes a four-scenario sensitivity check to show how much the top ranks move when pillar weights change, but the ranking is still a screening tool rather than a statistically estimated forecast.
