@@ -879,7 +879,7 @@
         </div>
         <h2 class="section-title">Data, scope, and <em>reproducibility.</em></h2>
         <p class="section-intro">
-          The project is reproducible from public APIs, not proprietary feeds. Census provides the affordability and
+          The project is reproducible from public source data, not proprietary feeds. Census provides the affordability and
           demographic backbone, FHFA provides metro-level house price momentum, and BLS provides labor-market depth.
           Those pulls are stitched together in a reusable ingestion layer, transformed to a metro-level analysis
           dataset, and then scored in the notebook.
@@ -896,12 +896,12 @@
           </div>
           <div class="source">
             <span class="source-tag">BLS LAUS</span>
-            <span class="source-text">Metro-level unemployment rate and employment level via the Bureau of Labor Statistics API. Employment-to-Population ratio is computed from employment level and Census population for the same metro geography, which gives the labor pillar more depth than unemployment alone.</span>
+            <span class="source-text">Metro-level unemployment rate and employment level via the Bureau of Labor Statistics API. Employment-to-Population ratio is computed from employment level and Census population for the same metro geography, and employment growth is measured as the latest year-over-year change in the employment-level series.</span>
           </div>
         </div>
 
         <div class="repro-note">
-          All data is pulled directly from the source APIs and cached locally as CSV files. The full pipeline,
+          All data is pulled directly from the public source releases and cached locally as CSV files. The full pipeline,
           from raw API pull to final ranked output, lives in <code>data_ingestion.py</code> and
           <code>southeast_housing_analysis.ipynb</code>. The ingestion layer is written to be reusable
           across other geographies; it is not hard-coded to the Southeast. The notebook then carries the project

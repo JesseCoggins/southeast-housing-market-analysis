@@ -24,7 +24,7 @@ This framework is built for anyone who needs to screen Southeast housing markets
 - **Lenders and risk analysts** setting market-level underwriting parameters who want a transparent, reproducible signal of labor-market depth beyond the headline unemployment rate
 - **Regional planners and economic development officials** benchmarking local market performance against comparable metros in the region
 
-The scoring framework is intentionally transparent and reproducible. All inputs come from free public APIs (Census, FHFA, BLS), all weights are explicit, and the full methodology is documented in the notebook so practitioners can adapt the framework to different geographies or weight assumptions.
+The scoring framework is intentionally transparent and reproducible. All scoring inputs come from free public Census, FHFA, and BLS source data, all weights are explicit, and the full methodology is documented in the notebook so practitioners can adapt the framework to different geographies or weight assumptions.
 
 ---
 
@@ -49,7 +49,7 @@ The scoring framework is intentionally transparent and reproducible. All inputs 
 | U.S. Census Building Permits Survey | Metro permit totals by structure type | 2023 |
 | BLS State and Area Employment | Metro supersector employment mix | 2023, optional |
 
-Growth metrics (population growth, income growth, employment growth) are computed as percent change from 2019 to 2023 using paired ACS and BLS pulls.
+Population growth and income growth are computed as percent change from 2019 to 2023 using paired ACS pulls. Employment growth is the latest year-over-year percent change from the BLS employment-level series.
 
 ---
 
@@ -57,7 +57,7 @@ Growth metrics (population growth, income growth, employment growth) are compute
 
 ```
 SE Housing Market Analysis/
-├── data_ingestion.py                 # Full data pipeline: Census, FHFA, BLS API pulls + caching
+├── data_ingestion.py                 # Full data pipeline: public Census, FHFA, and BLS pulls + caching
 ├── southeast_housing_analysis.ipynb  # Analysis notebook: cleaning, EDA, scoring, ranking
 ├── requirements.txt                  # Python dependencies
 ├── README.md                         # This file
