@@ -31,7 +31,7 @@ The scoring framework is intentionally transparent and reproducible. All inputs 
 ## Key Findings
 
 - **Huntsville, AL** is the top-ranked metro on both the overall score and the balance score, making it the clearest example of a market that combines reasonable affordability, real population growth, and unusual labor-market depth.
-- **Fayetteville-Springdale-Rogers, AR** and **Nashville, TN** lead the pure balance ranking, with high scores on both growth potential and labor-market stability.
+- **Fayetteville-Springdale-Rogers, AR** and **Nashville, TN** round out the balance top three behind Huntsville, with high scores on both growth potential and labor-market stability.
 - **Florence-Muscle Shoals, AL** and **Decatur, AL** rank highest on raw affordability but carry weaker growth signals.
 - Larger, higher-cost metros are present in the dataset but generally do not surface near the top because affordability deteriorated faster than local income growth.
 - The geometric mean balance score reveals that several high-overall-score markets are strong on affordability but weak on growth, a split the simple average would obscure.
@@ -151,12 +151,12 @@ import os
 os.environ["BLS_API_KEY"] = "your_key_here"
 ```
 
-The second notebook cell checks whether `BLS_API_KEY` is already available in your environment.
+An early setup cell in the notebook checks whether `BLS_API_KEY` is already available in your environment.
 
 ### Running
 
 1. Open `southeast_housing_analysis.ipynb` in Jupyter
-2. Set your BLS API key in cell 2 if it is not already present in your environment
+2. Set your BLS API key in the setup cell near the top if it is not already present in your environment
 3. Run all cells top to bottom. The pipeline fetches and caches the core analysis tables automatically on first run.
 
 By default, `load_all_source_tables()` loads the core tables used in the scoring model plus building permits. The optional BLS industry-employment table is skipped unless you explicitly call `load_all_source_tables(include_industry_employment=True)`.
