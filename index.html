@@ -141,7 +141,7 @@
       font-family:var(--font-serif); font-weight:400;
       font-size:clamp(2.4rem,5.5vw,4.2rem);
       line-height:1.14; letter-spacing:-0.02em;
-      color:var(--text); margin-bottom:36px;
+      color:var(--text); margin-bottom:14px;
       padding-bottom:0.08em;
     }
     .question em {
@@ -150,6 +150,23 @@
       font-style:italic;
       display:inline-block;
       padding:0 0.08em 0.18em 0.06em;
+    }
+    .hero-meta {
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      gap:10px;
+      margin-bottom:30px;
+      font-family:var(--font-mono);
+      font-size:11px;
+      letter-spacing:0.1em;
+      text-transform:uppercase;
+      color:var(--text-muted);
+    }
+    .hero-meta-divider {
+      width:16px;
+      height:1px;
+      background:var(--gold-dim);
     }
 
     /* ── Bottom-line callout ── */
@@ -554,6 +571,11 @@
           Which Southeast metros are <em>genuinely</em> strong after
           affordability, growth, and labor-market fundamentals are evaluated together?
         </h1>
+        <div class="hero-meta" aria-label="Project byline">
+          <span>Jesse Coggins</span>
+          <span class="hero-meta-divider" aria-hidden="true"></span>
+          <span>April 2026</span>
+        </div>
 
         <div class="callout">
           <div class="callout-label">The finding</div>
