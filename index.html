@@ -152,21 +152,23 @@
       padding:0 0.08em 0.18em 0.06em;
     }
     .hero-meta {
-      display:flex;
-      flex-wrap:wrap;
-      align-items:center;
-      gap:10px;
+      display:grid;
+      gap:6px;
       margin-bottom:30px;
       font-family:var(--font-mono);
+      color:var(--text-muted);
+    }
+    .hero-meta-main {
       font-size:11px;
       letter-spacing:0.1em;
       text-transform:uppercase;
-      color:var(--text-muted);
     }
-    .hero-meta-divider {
-      width:16px;
-      height:1px;
-      background:var(--gold-dim);
+    .hero-meta-sub {
+      font-size:12px;
+      letter-spacing:0.02em;
+      line-height:1.5;
+      text-transform:none;
+      color:var(--text-dim);
     }
 
     /* ── Bottom-line callout ── */
@@ -577,9 +579,8 @@
           affordability, growth, and labor-market fundamentals are evaluated together?
         </h1>
         <div class="hero-meta" aria-label="Project byline">
-          <span>Jesse Coggins</span>
-          <span class="hero-meta-divider" aria-hidden="true"></span>
-          <span>April 2026</span>
+          <span class="hero-meta-main">Jesse Coggins &middot; Published April 2026</span>
+          <span class="hero-meta-sub">Data vintage: ACS and permits 2023; FHFA HPI and BLS through December 2025</span>
         </div>
 
         <div class="callout">
