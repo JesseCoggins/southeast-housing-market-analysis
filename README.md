@@ -183,9 +183,16 @@ This analysis does not replace local due diligence. Rankings are point-in-time m
 ## Limitations
 
 - **Complete-case analysis**: metros missing any of the core required metrics — HPI index, HPI QoQ, HPI YoY, unemployment rate, population growth, income growth, employment growth, employment-to-population ratio, vacancy rate, or gross yield — are excluded from the final ranking. This makes the sample smaller and adjacent ranks less precise.
-- **ACS 1-year coverage**: the Census universe favors larger metros. Smaller Southeast markets may not appear in the sample.
+- **ACS CBSA coverage and source overlap**: the Census universe begins with Southeast metropolitan and micropolitan CBSAs. ACS 1-year coverage is broader for metropolitan areas than for micropolitan areas, but the final scored sample is constrained more by FHFA/BLS overlap and complete-case requirements than by ACS alone.
 - **Loaded data vs. scored data**: the pipeline can also pull building permits by default and industry employment optionally, but those datasets are not part of the current scoring model. They are included for exploration and future model expansion rather than the ranked output shown here.
-- **Coverage overlap matters**: the missing-data counts for FHFA and BLS do not add linearly because many metros are missing both sources at the same time. The final dropout from 156 metros to 105 reflects overlapping coverage gaps rather than separate source failures stacking independently.
-- **Simple weighting**: the percentile scoring and approximately equal-weight pillars create a transparent ranking, and the notebook includes a lightweight sensitivity check across alternative pillar weights. Even so, rankings at the margin should still be interpreted as approximate rather than precise.
+- **Percentile scoring and simple weighting**: percentile ranks make unlike variables easy to compare and keep the framework transparent, but they also compress real magnitude differences between metros. The notebook includes a lightweight sensitivity check across alternative pillar weights, yet the weights remain transparent choices rather than empirically optimized ones.
+- **No historical validation/backtesting**: this version is designed as a screening tool, but it is not backtested to show whether earlier vintages would have predicted later appreciation or labor-market outperformance.
+- **Nominal growth measures**: income growth is measured in nominal terms rather than inflation-adjusted terms. That is acceptable for cross-metro comparison within the same window, but it can overstate real household purchasing-power gains over 2019–2023.
 - **Point-in-time snapshot**: the scoring reflects the most recent data vintage included in this project snapshot. It does not forecast future conditions or account for local policy changes, new employer announcements, or macro interest rate shifts.
-- **Sensitivity to weighting choices**: the notebook includes a four-scenario sensitivity check to show how much the top ranks move when pillar weights change, but the ranking is still a screening tool rather than a statistically estimated forecast.
+
+## Next Steps
+
+- **Backtest earlier vintages**: apply the framework to earlier snapshots and compare those rankings with later housing and labor-market outcomes.
+- **Test alternative standardization and weighting schemes**: evaluate z-scores or winsorized z-scores alongside percentile ranks, and compare transparent weights with empirically tuned alternatives.
+- **Compare against external benchmarks**: check whether the ranking broadly agrees with migration, housing-demand, and published market-strength measures.
+- **Extend supply-side and affordability context**: add deeper inputs such as building permits, interest-rate-adjusted affordability, sub-market rental vacancy, multiple ACS vintages, and wage growth by sector.

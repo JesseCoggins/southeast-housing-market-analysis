@@ -794,7 +794,11 @@
             </div>
             <div class="mnote">
               <div class="mnote-label">Robustness and limits</div>
-              <p>The notebook includes a lightweight sensitivity check across alternative weight sets to see whether the top metros stay near the top when priorities shift. The ranking should still be read in tiers rather than with false precision, especially when adjacent metros have very similar scores. In the notebook, labels such as Top Tier are simple score terciles, not fixed score cutoffs. The full notebook also documents the complete-case logic, data gaps, and tradeoffs introduced by using public agency data only.</p>
+              <p>The Census universe begins with Southeast metropolitan and micropolitan CBSAs, and the drop from 156 loaded areas to 105 scored areas is driven mainly by cross-source overlap and complete-case filtering rather than ACS alone. The percentile approach keeps unlike variables comparable, but it also compresses real magnitude differences, income growth is nominal rather than inflation-adjusted, and the framework is presented as a screening tool rather than a backtested forecast.</p>
+            </div>
+            <div class="mnote">
+              <div class="mnote-label">Next extensions</div>
+              <p>The strongest upgrades for a v2 are historical backtesting, alternative standardization and weighting tests, external benchmark comparison, and deeper supply-side inputs such as permits, rate-adjusted affordability, sub-market vacancy, and wage growth by sector.</p>
             </div>
           </div>
         </div>
