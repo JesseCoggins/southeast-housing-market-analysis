@@ -385,7 +385,12 @@
     .p-items { font-size:11.5px; color:var(--text-dim); line-height:1.65; }
     .method-desc { font-size:14px; color:var(--text-dim); line-height:1.75; }
 
-    .method-notes { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
+    .method-notes {
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:14px;
+      align-items:stretch;
+    }
     .mnote {
       padding:16px 18px; border-radius:var(--r);
       background:var(--surface); border:1px solid var(--border);
